@@ -229,16 +229,14 @@ Writing view loaders
 
     a loader rendering a mustache view::
 
-        local function load_etlua(content, env)
-            local etlua = require'etlua'.compile
-            local c, err = etlua(content)
-            if not c then return v, err
-            else return c(env) end
+        local function load_mustache(content, env)
+            local lustache = require'lustache'
+            return lustache:render( content, env )
         end
 
         return {
             exts = {'mustache'},
-            handle = load_etlua,
+            handle = load_mustache,
         }
 
     a loader executing a lua script (or moonscript, if available)::
