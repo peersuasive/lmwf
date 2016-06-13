@@ -1,0 +1,4 @@
+[submodule "3rd/lua-httpd"]
+	path = 3rd/lua-httpd
+	url = https://github.com/peersuasive/lua-httpd
+	branch = develop
