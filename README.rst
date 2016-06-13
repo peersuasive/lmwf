@@ -198,6 +198,65 @@ Routes
     Splat parameters are to be retrieved from the table ``req.params.splat``.
 
 
+Writing view loaders
+====================
+
+    View loaders allow rendering views with external engines, like mustache, lua or moonscript code, etc.
+
+    Loaders must provide the following attributes:
+
+    - extensions handled by the loader
+    - the loader handle
+    - optionally, if it is a script view
+
+    The handle will receive the content of the view and the environment returned by the route.
+
+    Script handlers will receive the self object provided by httpd and the view name, as well as the route environment.
+
+    **examples**:
+
+    a simple loader return plain text::
+
+        local function sample_loader(content, env)
+            return content
+        end
+
+        return {
+            exts = {'plain'},
+            handle = sample_loader,
+            code = false
+        }
+
+    a loader rendering a mustache view::
+
+        local function load_etlua(content, env)
+            local etlua = require'etlua'.compile
+            local c, err = etlua(content)
+            if not c then return v, err
+            else return c(env) end
+        end
+
+        return {
+            exts = {'mustache'},
+            handle = load_etlua,
+        }
+
+    a loader executing a lua script (or moonscript, if available)::
+
+        local exts = {'lua'}
+        if pcall(require,'moonscript') then exts[#exts+1] = 'moon' end
+
+        local function load_lua(self, name, env)
+            local name = self.config.views..'.'..name
+            local cb = require(name)
+            return cb(self, env)
+        end
+        return {
+            exts = exts,
+            handle = load_lua,
+            code = true
+        }
+
 TODO
 ====
     
