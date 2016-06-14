@@ -50,7 +50,7 @@ local priv = {
     end,
     bind = function(port, ip)
         -- TODO: add ip to libhttpd
-        return socket.bind(port)
+        return socket.bind(port, ip)
     end,
     read = function(client)
         return socket.read(client)

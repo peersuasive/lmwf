@@ -20,7 +20,7 @@ format([[Usage: %s [OPTIONS] [main app]
 Options:
     -h,--help                   this message
     -D,--debug                  enable live reloading and show debug traces
-    -H,--host <hostname|IP>     listen on hostname
+    -H,--host <IP>              listen on IP only (default: all available IPs)
     -p,--port <port number>     listen on port number
     -v,--version                print version number
 ]], arg[0])
@@ -98,10 +98,10 @@ package.cpath = './wrappers/?.so;./wrappers/?.dylib;'..package.cpath
 local socket = require'core.socket'
 require'core.debug_utils'
 
-local listener = assert( socket.bind( config.port ) )
+local listener = assert( socket.bind( config.port, config.host ) )
 
 if not __DEBUG then
-    print(format("Starting server on %s:%s", config.host, config.port))
+    print(format("Starting server on %s:%s", config.host or'*', config.port))
     local httpd = require'core.httpd'(_, socket, listener, config.app)
     while true do
         httpd:serve()
