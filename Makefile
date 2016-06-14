@@ -15,3 +15,7 @@ httpd: 3rd/lua-httpd/libhttpd.so
 
 test:
 	@busted --lua=luajit -o spec/utfTerminal.lua
+
+clean:
+	@rm -f wrappers/libhttpd.so
+
