@@ -29,6 +29,7 @@ end
 
 local args = {...}
 local params = {}
+local default_socket = 'lmwf.wrappers.lua-httpd'
 local config_file, config_default = 'lmwf.conf', {
     host = 'localhost',
     port = 8080,
@@ -94,22 +95,22 @@ for k,v in next,config_default do
     config[k] = params[k] or config[k] or v
 end
 
-package.cpath = './wrappers/?.so;./wrappers/?.dylib;'..package.cpath
-local socket = require'core.socket'
-require'core.debug_utils'
+package.cpath = './?/?.so;./?/?.dylib;'..package.cpath
+local socket = require( config.socket or default_socket )
+require'lmwf.debug_utils'
 
 local listener = assert( socket.bind( config.port, config.host ) )
 
 if not __DEBUG then
     print(format("Starting server on %s:%s", config.host or'*', config.port))
-    local httpd = require'core.httpd'(_, socket, listener, config.app)
+    local httpd = require'lmwf.httpd'(_, socket, listener, config.app)
     while true do
         httpd:serve()
     end
 else
     dbg("Starting server on port %s", config.port)
     while true do
-        local httpd = require'core.httpd'(_, socket, listener, config.app)
+        local httpd = require'lmwf.httpd'(_, socket, listener, config.app)
         local r, res, err = pcall( httpd.serve, httpd )
         if not r then
             print(format("ERROR (loader): %s", res))

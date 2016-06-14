@@ -1,4 +1,4 @@
-local app = require'core.Application'("second")
+local app = require'lmwf.Application'("second")
 
 app:GET('/second/path', 'SECONDPATH')
 

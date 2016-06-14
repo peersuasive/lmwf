@@ -1,4 +1,4 @@
-local socket = require'libhttpd'
+local socket = require'lmwf.libhttpd'
 local concat = table.concat
 local mt
 mt = {

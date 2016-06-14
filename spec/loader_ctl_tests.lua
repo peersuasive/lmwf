@@ -2,7 +2,7 @@
 local posix = require'posix'
 local signal = require'posix.signal'
 local format = string.format
-local socket = require'wrappers.lua-httpd'
+local socket = require'lmwf.wrappers.lua-httpd'
 
 local mt = {}
 function mt:stop_server(pid)
@@ -25,7 +25,7 @@ function mt:start_server(app)
     local config = self.config
     local listener = assert( socket.bind( config.port ) )
     self.listener = listener
-    local httpd = require'core.httpd'(config, socket, self.listener, app)
+    local httpd = require'lmwf.httpd'(config, socket, self.listener, app)
     if not httpd  then
         error("Can't load httpd class") end
     self.httpd = httpd
@@ -97,7 +97,7 @@ local function new(_, config, dbg)
     config.port = config.port or 1444
     
     __DEBUG = dbg
-    require'core.debug_utils'
+    require'lmwf.debug_utils'
     local self = {
         config = config,
         pid = 0

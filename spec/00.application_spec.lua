@@ -2,7 +2,7 @@ describe("HTMLd unit tests", function()
     local dbg
     setup(function()
         --_G.__DEBUG=true
-        dbg = require'core.debug_utils'
+        dbg = require'lmwf.debug_utils'
         dbg.reset()
     end)
     teardown(function()
@@ -16,19 +16,19 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should extend Application class", function()
-        local app = require'core.Application'
+        local app = require'lmwf.Application'
         assert.is_table(app)
         assert.is_table(app())
     end)
 
     it("should set an application name", function()
-        local app = require'core.Application'("test_name")
+        local app = require'lmwf.Application'("test_name")
         assert.is_table(app)
         assert.same("test_name", app.name)
     end)
 
     it("should export GET, POST, ROUTE, and url_for", function()
-        local app = require'core.Application'("methods")
+        local app = require'lmwf.Application'("methods")
         local GET, POST, ROUTE, url_for = app:export()
         assert.is_function(GET)
         assert.is_function(POST)
@@ -41,7 +41,7 @@ describe("HTMLd unit tests", function()
               GET,
               POST,
               ROUTE,
-              url_for = require'core.Application'("methods_init", 'export')
+              url_for = require'lmwf.Application'("methods_init", 'export')
         assert.is_function(GET)
         assert.is_function(POST)
         assert.is_function(ROUTE)
@@ -53,7 +53,7 @@ describe("HTMLd unit tests", function()
               GET,
               POST,
               ROUTE,
-              url_for = require'core.Application'("methods_init", {'GET'})
+              url_for = require'lmwf.Application'("methods_init", {'GET'})
         assert.is_function(GET)
         assert.is_nil(POST)
         assert.is_nil(ROUTE)
@@ -61,19 +61,19 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should define a GET path", function()
-        local app = require'core.Application'("get_path")
+        local app = require'lmwf.Application'("get_path")
         app:GET('/get',"GET")
         assert.truthy(app.pathes.get.pathes['/get'])
     end)
 
     it("should define a POST path", function()
-        local app = require'core.Application'("post_path")
+        local app = require'lmwf.Application'("post_path")
         app:POST('/post',"POST")
         assert.truthy(app.pathes.post.pathes['/post'])
     end)
 
     it("should define a path with ROUTE for GET", function()
-        local app = require'core.Application'("route_get")
+        local app = require'lmwf.Application'("route_get")
         app:ROUTE('/routeget',{
             GET = "ROUTEGET"
         })
@@ -81,7 +81,7 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should define a path with ROUTE for POST", function()
-        local app = require'core.Application'("route_post")
+        local app = require'lmwf.Application'("route_post")
         app:ROUTE('/routepost',{
             POST = "ROUTEPOST"
         })
@@ -89,7 +89,7 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should define both the same path for GET and POST without complaining", function()
-        local app = require'core.Application'("get_post_path")
+        local app = require'lmwf.Application'("get_post_path")
         local path = '/getpost'
         app:GET( path ,"GET")
         app:POST( path ,"POST")
@@ -98,7 +98,7 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should define a path with ROUTE for both POST and GET", function()
-        local app = require'core.Application'("route_get_post")
+        local app = require'lmwf.Application'("route_get_post")
         app:ROUTE('/routegetpost',{
             GET = "ROUTEGETPOSTGET",
             POST = "ROUTEGETPOSTPOST"
@@ -108,7 +108,7 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should set a route name for a path with GET", function()
-        local app = require'core.Application'("get_name")
+        local app = require'lmwf.Application'("get_name")
 
         app:GET({get='/getname'}, "GETNAME")
         local name, path = 'get', '/getname'
@@ -120,7 +120,7 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should set a case insensitive name", function()
-        local app = require'core.Application'("get_insensitive_name")
+        local app = require'lmwf.Application'("get_insensitive_name")
 
         app:GET({InSenSiTIve='/getname'}, "GETNAME")
         local name, path = 'insensitive', '/getname'
@@ -133,7 +133,7 @@ describe("HTMLd unit tests", function()
 
 
     it("should set a route name for a path with POST", function()
-        local app = require'core.Application'("get_name")
+        local app = require'lmwf.Application'("get_name")
 
         app:POST({post='/postname'}, "POSTNAME")
         local name, path = 'post', '/postname'
@@ -145,7 +145,7 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should set a route name for a path with GET and POST without complaining", function()
-        local app = require'core.Application'("get_post_name")
+        local app = require'lmwf.Application'("get_post_name")
 
         app:GET({aname='/getname'}, "GETNAME")
         app:POST({aname='/postname'}, "POSTNAME")
@@ -166,7 +166,7 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should set a route name for a path with both GET and POST from ROUTE", function()
-        local app = require'core.Application'("route_get_post_name")
+        local app = require'lmwf.Application'("route_get_post_name")
         app:ROUTE({routename='/routename'},{
             GET = "GETROUTENAME",
             POST = "POSTROUTENAME"
@@ -187,7 +187,7 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should accept a path with named parameters", function()
-        local app = require'core.Application'("get_with_params")
+        local app = require'lmwf.Application'("get_with_params")
         local e_path = '/get/:with/params'
         app:GET(e_path, "WITHPARAMS")
         local rx, values = next(app.pathes.get.rx)
@@ -199,7 +199,7 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should accept a path with variable unmamed parameters", function()
-        local app = require'core.Application'("get_with_wildcard")
+        local app = require'lmwf.Application'("get_with_wildcard")
         app:GET('/get/with/*', 'GETWILDCARD')
         local rx, values = next(app.pathes.get.rx)
         assert.same('EXTRA/VALUES', string.match('/get/with/EXTRA/VALUES', rx))
@@ -207,7 +207,7 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should accept a path with both named and variable unmamed parameters", function()
-        local app = require'core.Application'("get_named_and_wildcard")
+        local app = require'lmwf.Application'("get_named_and_wildcard")
         app:GET('/get/with/:named/and/*', 'GETNAMEDANDWILDCARD')
         local rx, values = next(app.pathes.get.rx)
         assert.same('NAMED', string.match('/get/with/NAMED/and', rx))
@@ -216,19 +216,19 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should return url_for a named route", function()
-        local app = require'core.Application'("url_for")
+        local app = require'lmwf.Application'("url_for")
         app:GET({name='/named/route'}, "URL_FOR")
         assert.same( '/named/route',  app:url_for('name') )
     end)
 
     it("should return url_for a case insensitive named route", function()
-        local app = require'core.Application'("url_for")
+        local app = require'lmwf.Application'("url_for")
         app:GET({name='/named/route'}, "URL_FOR")
         assert.same( '/named/route',  app:url_for('NamE') )
     end)
 
     it("should return url_for a name with defined parameters", function()
-        local app = require'core.Application'("url_for_named_params")
+        local app = require'lmwf.Application'("url_for_named_params")
         app:GET({name='/some/:named/:params'}, "URL_FOR_NAMED_PARAMS")
         assert.same( '/some/NAMED/PARAMS', app:url_for('name', { named="NAMED", params="PARAMS" }) )
         assert.same( '/some/NAMED', app:url_for('name', { named="NAMED" }) )
@@ -236,7 +236,7 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should return parameters at their correct position when some of them are missing", function()
-        local app = require'core.Application'("url_for_named_params")
+        local app = require'lmwf.Application'("url_for_named_params")
         app:GET({name='/some/:named/:params/missing'}, "URL_FOR_MISSING_NAMED_PARAMS")
         assert.same( '/some/NAMED/PARAMS/missing', app:url_for('name', { named="NAMED", params="PARAMS" }) )
         assert.same( '/some/NAMED//missing', app:url_for('name', { named="NAMED" }) )
@@ -244,14 +244,14 @@ describe("HTMLd unit tests", function()
 
 
     it("should return url_for a name with variable parameters", function()
-        local app = require'core.Application'("url_for_unnamed_params")
+        local app = require'lmwf.Application'("url_for_unnamed_params")
         app:GET({wildcard='/url/with/*'}, 'URLWITHWILDCARD')
         assert.same( '/url/with', app:url_for('wildcard') )
         assert.same( '/url/with/EXTRA/PARAMS', app:url_for('wildcard', {'EXTRA','PARAMS'}) )
     end)
     
     it("should provide env and req objects", function()
-        local app = require'core.Application'("env_and_req")
+        local app = require'lmwf.Application'("env_and_req")
         local f = function(env, req)
             assert.is_table(env)
             assert.is_table(req)
@@ -261,7 +261,7 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should include another application", function()
-        local app = require'core.Application'("first")
+        local app = require'lmwf.Application'("first")
         local second = app:include('spec.apps.second')
         assert.same('first', app.name)
         assert.same('second', second.name)
@@ -275,9 +275,9 @@ describe("HTMLd unit tests", function()
     end)
 
     it("should include an instanciated application", function()
-        local app = require'core.Application'("first")
+        local app = require'lmwf.Application'("first")
         app:GET("/first", "FIRST")
-        local second = require'core.Application'("second")
+        local second = require'lmwf.Application'("second")
         second:GET("/second", "SECOND")
 
         local res = app:include(second)

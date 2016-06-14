@@ -7,10 +7,10 @@ local dbg = dbg
 local sfind = string.find
 local gsub = string.gsub
 local format = string.format
-local split = require'helpers.split'
+local split = require'lmwf.helpers.split'
 local concat = table.concat
 
-local app_utils = require'core.Application'
+local app_utils = require'lmwf.Application'
 local url_for = app_utils.url_for
 
 if pcall(require, 'moonscript') then require'moonscript' end
@@ -162,7 +162,7 @@ function mt:serve()
 
     -- *naive* POST request implementation
     if ( method == "POST" ) then
-        local split = require'helpers.split'
+        local split = require'lmwf.helpers.split'
         local prepared = split(request, '\r\n\r\n')
         local pre_headers = prepared[1]
         local bdata = {}
@@ -453,7 +453,7 @@ local function new(config_, socket, listener, app)
     else
         local r, a = pcall(require, app or 'app')
         if not r then
-            error(string.format("Can't load app %s: %s", app, loaded_app)) end
+            error(string.format("Can't load app '%s': %s", app, a)) end
         loaded_app = a
     end
 

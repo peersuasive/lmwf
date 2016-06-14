@@ -1,4 +1,4 @@
-local app = require'core.Application'('main')
+local app = require'lmwf.Application'('main')
 
 app:include'apps.version'
 

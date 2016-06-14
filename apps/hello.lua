@@ -1,4 +1,4 @@
-local app = require'core.Application'('app')
+local app = require'lmwf.Application'('app')
 
 app:GET('/hello', "Missing username: Usage: /hello/YOURNAME")
 

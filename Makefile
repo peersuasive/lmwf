@@ -1,13 +1,13 @@
 LUA_CPATH = ./wrappers/?.so;$(shell lua -e 'print(package.cpath)')
 export LUA_CPATH
 
-all: wrappers/libhttpd.so
+all: lmwf/libhttpd.so
 	
-wrappers/libhttpd.so: httpd
-	@cd wrappers/ && ln -sf ../3rd/lua-httpd/libhttpd.so .
+lmwf/libhttpd.so: 3rd/lua-httpd/libhttpd.so
+	@cd lmwf && ln -sf ../3rd/lua-httpd/libhttpd.so .
 	@echo OK
 
-httpd: 3rd/lua-httpd/libhttpd.so
+3rd/lua-httpd/libhttpd.so: 3rd/lua-httpd/libhttpd.c
 	@echo Compiling libhttpd...
 	@git submodule update --remote
 	@cd 3rd/lua-httpd && make
@@ -17,5 +17,5 @@ test:
 	@busted --lua=luajit -o spec/utfTerminal.lua
 
 clean:
-	@rm -f wrappers/libhttpd.so
+	@rm -f lmwf/libhttpd.so
 

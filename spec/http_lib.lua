@@ -1,3 +1,0 @@
---[==[
--- quick and simple http/html library for automation testing
---]==]

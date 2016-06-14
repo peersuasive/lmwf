@@ -70,7 +70,7 @@ describe("HTTPd server unit tests", function()
     setup(function()
         _G.__TEST = true
         --_G.__DEBUG=true
-        dbg = require'core.debug_utils'
+        dbg = require'lmwf.debug_utils'
         dbg.reset()
     end)
     teardown(function()
@@ -95,7 +95,7 @@ describe("HTTPd server unit tests", function()
         local cb = function(env, req)
             return path
         end
-        local app = require'core.Application'("http test GET")
+        local app = require'lmwf.Application'("http test GET")
         app:GET( path , cb )
 
         local http = start_server( app, path )
@@ -113,7 +113,7 @@ describe("HTTPd server unit tests", function()
             --assert(false)
             return path
         end
-        local app = require'core.Application'("http test GET")
+        local app = require'lmwf.Application'("http test GET")
         app:GET( path , cb )
 
         local http = start_server( app, path )
@@ -135,7 +135,7 @@ describe("HTTPd server unit tests", function()
             local o = assert(req:url_for(second_name))
             return o
         end
-        local app = require'core.Application'("http test GET")
+        local app = require'lmwf.Application'("http test GET")
         app:GET( path , cb )
         app:GET( {[second_name] = second_path} , "SECONDPATH")
 
@@ -151,7 +151,7 @@ describe("HTTPd server unit tests", function()
 
     it("should render an inline view", function()
         local path, content = '/inline', 'INLINE'
-        local app = require'core.Application'("inline view")
+        local app = require'lmwf.Application'("inline view")
         app:GET( path , content )
 
         local http = start_server(app, path)
@@ -163,7 +163,7 @@ describe("HTTPd server unit tests", function()
 
     it("should render an inline view from a callback", function()
         local path, content = '/inlinef', 'INLINEF'
-        local app = require'core.Application'("inline view")
+        local app = require'lmwf.Application'("inline view")
         app:GET( path , function() return content end )
 
         local http = start_server(app, path)
@@ -177,7 +177,7 @@ describe("HTTPd server unit tests", function()
 
     it("should render an inline view returned from a callback with options", function()
         local path, content = '/inlinea', 'INLINEA'
-        local app = require'core.Application'("inline view")
+        local app = require'lmwf.Application'("inline view")
         app:GET( path , function() return {content} end )
 
         local http = start_server(app, path)
@@ -191,7 +191,7 @@ describe("HTTPd server unit tests", function()
 
     it("should render an inline view returned from a callback with options even if render is provided", function()
         local path, content = '/inlinea', 'INLINEA'
-        local app = require'core.Application'("inline view")
+        local app = require'lmwf.Application'("inline view")
         app:GET( path , function() return {render=true, content} end )
 
         local http = start_server(app, path)
@@ -204,7 +204,7 @@ describe("HTTPd server unit tests", function()
     end)
     it("should render an inline view returned from a callback with options even if render is false", function()
         local path, content = '/inlinea', 'INLINEA'
-        local app = require'core.Application'("inline view")
+        local app = require'lmwf.Application'("inline view")
         app:GET( path , function() return {render=false, content} end )
 
         local http = start_server(app, path)
@@ -218,7 +218,7 @@ describe("HTTPd server unit tests", function()
 
     it("should render a specified view", function()
         local path, content = '/specifiedview', 'SPECIFIED VIEW'
-        local app = require'core.Application'("inline view")
+        local app = require'lmwf.Application'("inline view")
         app:GET( path , function()
             return {render='specified'}
         end )
@@ -234,7 +234,7 @@ describe("HTTPd server unit tests", function()
 
     it("should fail to render an unavailable specified view", function()
         local path, content = '/specifiedview', 'SPECIFIED VIEW'
-        local app = require'core.Application'("inline view")
+        local app = require'lmwf.Application'("inline view")
         app:GET( path , function()
             return {render='unavailable'}
         end )
@@ -251,7 +251,7 @@ describe("HTTPd server unit tests", function()
     it("should find and render a default html view by name", function()
         -- TODO: provide config with views path set to specs/views
         local name, path, content = 'namedview', '/getnamedview', 'NAMEDVIEW'
-        local app = require'core.Application'("named view")
+        local app = require'lmwf.Application'("named view")
         app:GET({[name]=path}, function()
         end)
 
@@ -268,7 +268,7 @@ describe("HTTPd server unit tests", function()
     it("should find and render a default html view by name when callbacks returned with options", function()
         -- TODO: provide config with views path set to specs/views
         local name, path, content = 'namedview', '/getnamedview', 'NAMEDVIEW'
-        local app = require'core.Application'("named view")
+        local app = require'lmwf.Application'("named view")
         app:GET({[name]=path}, function()
             return {}
         end)
@@ -284,7 +284,7 @@ describe("HTTPd server unit tests", function()
 
     it("should find and render a default html view by name when callbacks returns true", function()
         local name, path, content = 'namedview', '/getnamedview', 'NAMEDVIEW'
-        local app = require'core.Application'("named view")
+        local app = require'lmwf.Application'("named view")
         app:GET({[name]=path}, function()
             return true
         end)
@@ -300,7 +300,7 @@ describe("HTTPd server unit tests", function()
 
     it("should try to guess view name from path", function()
         local path, content = '/unnamedview', 'UNNAMED VIEW'
-        local app = require'core.Application'("unnamed view")
+        local app = require'lmwf.Application'("unnamed view")
         app:GET(path, function()
             return true
         end)
@@ -316,7 +316,7 @@ describe("HTTPd server unit tests", function()
 
     it("should fail rendering unavailable view", function()
         local name, path = 'fakenamedview', '/getfakenamedview'
-        local app = require'core.Application'("fake named view")
+        local app = require'lmwf.Application'("fake named view")
         app:GET({[name]=path}, function()
             return true
         end)
@@ -331,7 +331,7 @@ describe("HTTPd server unit tests", function()
 
     it("should fail guessing view name from path from unavailable view", function()
         local path = '/unavailableview'
-        local app = require'core.Application'("unavailable unnamed view")
+        local app = require'lmwf.Application'("unavailable unnamed view")
         app:GET(path, function()
             return true
         end)
@@ -346,7 +346,7 @@ describe("HTTPd server unit tests", function()
 
     it("should fail rendering view if callback returns false", function()
         local name, path, content = 'namedview', '/getnamedview', 'NAMEDVIEW'
-        local app = require'core.Application'("named view")
+        local app = require'lmwf.Application'("named view")
         app:GET({[name]=path}, function()
             return false
         end)
@@ -361,7 +361,7 @@ describe("HTTPd server unit tests", function()
 
     it("should fail rendering view when returning render=false", function()
         local name, path, content = 'namedview', '/getnamedview', 'NAMEDVIEW'
-        local app = require'core.Application'("named view")
+        local app = require'lmwf.Application'("named view")
         app:GET({[name]=path}, function()
             return {render=false}
         end)
@@ -376,7 +376,7 @@ describe("HTTPd server unit tests", function()
 
     it("should fail rendering view when returning an unsupported value type", function()
         local name, path, content = 'namedview', '/getnamedview', 'NAMEDVIEW'
-        local app = require'core.Application'("named view")
+        local app = require'lmwf.Application'("named view")
         app:GET({[name]=path}, function()
             return function()end
         end)
@@ -391,7 +391,7 @@ describe("HTTPd server unit tests", function()
 
     it("should accept view loaders at runtime", function()
         local path = '/loader'
-        local app = require'core.Application'("view with loader")
+        local app = require'lmwf.Application'("view with loader")
         app:GET( path , "LOADER")
  
         local _, httpd = start_server(app, path)
@@ -406,7 +406,7 @@ describe("HTTPd server unit tests", function()
 
     it("should load static view loaders", function()
         local path = '/plaitext'
-        local app = require'core.Application'("view with loader")
+        local app = require'lmwf.Application'("view with loader")
         app:GET( path , "PLAINTEXTLOADER")
  
         local _, httpd = start_server(app, path)
@@ -416,7 +416,7 @@ describe("HTTPd server unit tests", function()
 
     it("should find and render a view with a loader", function()
         local name, path = 'plainloader', '/plainloader'
-        local app = require'core.Application'("view with loader")
+        local app = require'lmwf.Application'("view with loader")
         app:GET({[name]=path}, function()end)
 
         local http = start_server(app, path)
@@ -430,7 +430,7 @@ describe("HTTPd server unit tests", function()
 
     it("should set content-type", function()
         local path, content = '/json', [==[{"some":"data","total":1}]]==]
-        local app = require'core.Application'("json")
+        local app = require'lmwf.Application'("json")
         app:GET(path, function()
             return {content_type='application/json', content}
         end)
@@ -448,7 +448,7 @@ describe("HTTPd server unit tests", function()
 
     it("should set headers", function()
         local path, content = '/headers', [==[{"some":"data","total":1}]]==]
-        local app = require'core.Application'("json")
+        local app = require'lmwf.Application'("json")
         app:GET(path, function()
             return {headers={['Content-type']='application/json',['extra-field']='SOME EXTRA VALUES'}, content}
         end)
@@ -466,13 +466,13 @@ describe("HTTPd server unit tests", function()
     end)
 
     it("should respond to pathes from another application", function()
-        local app = require'core.Application'("first")
+        local app = require'lmwf.Application'("first")
         local second = app:include('spec.apps.second')
     end)
 
     it("should respond to POST data", function()
         local path, content, post_content = '/postdata', 'POST DATA', "SOME DATA"
-        local app = require'core.Application'("post data")
+        local app = require'lmwf.Application'("post data")
         app:POST(path, function(env, req)
             assert.same( post_content, req.data )
             return content
@@ -492,7 +492,7 @@ describe("HTTPd server unit tests", function()
             param1 = "one",
             param2 = "two"
         }
-        local app = require'core.Application'("post data")
+        local app = require'lmwf.Application'("post data")
         app:POST(path, function(env, req)
             assert.is_table(req.data)
             assert.same( post_data, req.data )
@@ -539,7 +539,7 @@ describe("HTTPd server unit tests", function()
             param1 = "one",
             param2 = "two"
         }
-        local app = require'core.Application'("post data")
+        local app = require'lmwf.Application'("post data")
         app:POST(path, function(env, req)
             assert.is_table(req.data)
             assert.same( post_data, req.data )
@@ -564,7 +564,7 @@ describe("HTTPd server unit tests", function()
                 name = 'myfile' 
             }
         }
-        local app = require'core.Application'("post data")
+        local app = require'lmwf.Application'("post data")
         app:POST(path, function(env, req)
             assert.is_table(req.data)
             assert.same( post_data, req.data )

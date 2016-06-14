@@ -3,7 +3,7 @@ httpd application
 --]==]
 
 local dbg = dbg
-local escape_pattern = require'helpers.utils'.escape_pattern
+local escape_pattern = require'lmwf.helpers.utils'.escape_pattern
 local format = string.format
 local concat = table.concat
 
