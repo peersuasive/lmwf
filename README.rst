@@ -4,7 +4,7 @@ It is greatly inspired by Lapis, without dependency to any web server.
 
 By default, it runs on a slightly modified version of `lua-httpd <https://git.steve.org.uk/git/skx/lua-httpd.git>`_.
 
-``core.httpd`` is a modified version of lua-httpd's.
+``lmwf.httpd`` is a modified version of lua-httpd's.
 
 Requirements
 ============
@@ -258,7 +258,7 @@ Writing view loaders
 TODO
 ====
     
-    - implement hostname in socket or replace lua-httpd with luasocket
+    - luarock
 
     - ReSTfull API (missing PUT, PATCH and DELETE)
 

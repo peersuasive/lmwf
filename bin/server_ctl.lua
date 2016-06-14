@@ -95,7 +95,6 @@ for k,v in next,config_default do
     config[k] = params[k] or config[k] or v
 end
 
-package.cpath = './?/?.so;./?/?.dylib;'..package.cpath
 local socket = require( config.socket or default_socket )
 require'lmwf.debug_utils'
 
