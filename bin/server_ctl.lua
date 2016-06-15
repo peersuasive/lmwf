@@ -54,7 +54,6 @@ while true do
     elseif o=='-p' or o=='--port' then
         i=i+1
         local port = args[i]
-        args[i+1] = nil
         if not(port) or not(port:match('^[0-9]+$')) then err("Wrong parameter for option %s: %s", o, port) end
         params.port = tonumber(port)
     elseif o=='-v' or o=='--views' then
@@ -107,7 +106,7 @@ if not __DEBUG then
         httpd:serve()
     end
 else
-    dbg("Starting server on port %s", config.port)
+    dbg("Starting server on port %s:%s", config.host or'*', config.port)
     while true do
         local httpd = require'lmwf.httpd'(_, socket, listener, config.app)
         local r, res, err = pcall( httpd.serve, httpd )
