@@ -50,10 +50,10 @@ EOF
 }
 
 run_server() {
-    lemwaf_ctl $@
+    lemwaf_ctl "$@"
 }
 
 case $action in
     create) create_app;;
-    run) run_server;;
+    run) run_server "$@";;
 esac
