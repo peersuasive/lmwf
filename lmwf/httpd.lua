@@ -389,7 +389,7 @@ function mt:dispatch(client, method, path)
                 if res.content_type then headers['Content-type'] = res.content_type end
             end
             if res.send_file then -- file to send
-                send_file = req.send_file
+                send_file = res.send_file
             elseif res[1] then -- data to send provided
                 view = res[1]
             else
