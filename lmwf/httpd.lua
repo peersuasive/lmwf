@@ -343,7 +343,7 @@ function mt:dispatch(client, method, path)
 
     set_params(params)
 
-    local view, err, headers, status
+    local view, err, headers, status, send_file
     if 'string'==type(m)then
         view = m
     else
@@ -388,7 +388,9 @@ function mt:dispatch(client, method, path)
                 headers = res.headers or {}
                 if res.content_type then headers['Content-type'] = res.content_type end
             end
-            if res[1] then -- data to send provided
+            if res.send_file then -- file to send
+                send_file = req.send_file
+            elseif res[1] then -- data to send provided
                 view = res[1]
             else
                 if res.render==true or res.render==nil then -- select default view
@@ -412,11 +414,13 @@ function mt:dispatch(client, method, path)
             err = format("Unsupported returned type: %s", type(res))
         end
     end
-    if not view then
+    if send_file then
+        return socket.send_file(client, send_file, headers, status)
+    elseif not view then
         local err = err or format("Couldn't load or render view for path: %s", path)
         return_error(self, client, err, m, HTTP_STATUS.HTTP_INTERNAL_ERROR)
     else
-        dbg("STATUS: %s", status)
+        dbg("STATUS: %s", status or 200)
         return socket.send_response(client, view, headers, status)
     end
 end

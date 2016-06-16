@@ -30,6 +30,45 @@ mt = {
         socket.close(client)
         return s
     end,
+    send_file = function(client, filename, headers, status)
+        local f = io.open(filename, 'rb')
+        if not f then return mt.send_error(client, 404, 'File not found') end
+
+        local size = f:seek('end')
+        f:seek('set')
+        local max_size = 2^20 -- 1Mo
+
+        headers = headers or {}
+        headers['Content-length'] = size
+        mt.set_headers(client, headers, status)
+
+        if size < max_size then
+            print("Sending small file", size)
+            local data = f:read('*a')
+            f:close()
+            local s = socket.write(data)
+            return #data==size and s==size, s, #data, size
+        end
+
+        local readsize, sent = 0, 0
+        --local bufsize = 2^14
+        local bufsize = 1024*1024
+        while true do
+            local d = f:read(bufsize)
+            if not d then break end
+            readsize = readsize + #d
+            local s, err = socket.write(client, d)
+            if not s then
+                f:close()
+                socket.close(client)
+                return s, err
+            end
+            sent = sent + s
+        end
+        f:close()
+        socket.close(client)
+        return size==readsize and sent==size, sent, readsize, size
+    end,
     send_error = function(client, status, msg, status_msg, content_type)
         local msg = "<html><head><title>Error</title></head><body><center><h1>Error</h1><p>"
                 ..(msg or status).."</p></center></body></html>"
