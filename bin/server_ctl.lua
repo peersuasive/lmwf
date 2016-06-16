@@ -20,6 +20,7 @@ format([[Usage: %s [OPTIONS] [main app]
 Options:
     -h,--help                   this message
     -D,--debug                  enable live reloading and show debug traces
+    -q,--quiet                  be quiet
     -H,--host <IP>              listen on IP only (default: all available IPs)
     -p,--port <port number>     listen on port number
     -v,--version                print version number
@@ -33,10 +34,16 @@ local default_socket = 'lmwf.wrappers.lua-httpd'
 local config_file, config_default = 'lmwf.conf', {
     host = 'localhost',
     port = 8080,
+    dev = {
+        port = 8081,
+        host = 'localhost'
+    },
     app = 'app',
     views = 'views',
     loaders = 'loaders',
 }
+local quiet = false
+
 local i,max=1,#args+1
 while true do
     if i==max then break end
@@ -46,6 +53,8 @@ while true do
         os.exit(1)
     elseif o=='-D' or o=='--debug' then
         _G.__DEBUG = true
+    elseif o=='-q' or o=='--quiet' then
+        quiet = true
     elseif o=='-H' or o=='--host' then
         i=i+1
         local val = args[i]
@@ -94,19 +103,28 @@ for k,v in next,config_default do
     config[k] = params[k] or config[k] or v
 end
 
+if __DEBUG then
+    config.dev = config.dev or {}
+    if params.port then config.dev.port = params.port end
+    if params.host then config.dev.host = params.host end
+end
+
 local socket = require( config.socket or default_socket )
 require'lmwf.debug_utils'
 
-local listener = assert( socket.bind( config.port, config.host ) )
-
 if not __DEBUG then
-    print(format("Starting server on %s:%s", config.host or'*', config.port))
+    local listener = assert( socket.bind( config.port, config.host ) )
+    if not quiet then
+        print(format("Starting server on %s:%s", config.host or'*', config.port))
+    end
     local httpd = require'lmwf.httpd'(_, socket, listener, config.app)
     while true do
         httpd:serve()
     end
 else
-    dbg("Starting server on port %s:%s", config.host or'*', config.port)
+    local host, port = config.dev.host or config.host, config.dev.port or config.port
+    local listener = assert( socket.bind( port, host) )
+    dbg("Starting server on port %s:%s", host or'*', port)
     while true do
         local httpd = require'lmwf.httpd'(_, socket, listener, config.app)
         local r, res, err = pcall( httpd.serve, httpd )

@@ -4,8 +4,10 @@ help() {
     echo "Usage: $0 create app_name"
     echo "       $0 run"
     echo "actions:"
-    echo "  create <app_name> create a new application"
-    echo "  run     run server"
+    echo "  create <app_name>   create a new application"
+    echo "  run                 run server (in background)"
+    echo "  stop                stop background running server"
+    echo "  run-dev             run server in DEBUG mode"
 }
 
 action=$1; shift
@@ -16,10 +18,12 @@ case $action in
         [[ -z "$1" ]] && echo "Missing application name" && help && exit 1;
         app_name=$1; shift;;
 
-    run);;
+    run|start);;
+    stop);;
+    run-dev|run-debug);;
 
     *)
-        echo "Unknown option: $1"
+        echo "Unknown action '$1'"
         help
         exit 1
 esac 
@@ -30,7 +34,7 @@ create_app() {
 
     mkdir -p "$app_name"
     cd "$app_name"
-    mkdir loaders views spec
+    mkdir loaders views spec logs
     cat > app.lua <<EOF
 local app = require'lmwf.Application'('$app_name')
 app:GET('/', "Welcome to $app_name !")
@@ -50,10 +54,22 @@ EOF
 }
 
 run_server() {
-    lemwaf_ctl "$@"
+    lemwaf_ctl --quiet "$@" &
+    local pid=$!
+    #disown $pid
+    echo "$pid" > logs/pid
+}
+stop_server() {
+    local pid=$(cat logs/pid 2>/dev/null)
+    [[ -n "$pid" ]] && kill -5 $pid && rm -f logs/pid
+}
+run_server_debug() {
+    lemwaf_ctl --debug "$@"
 }
 
 case $action in
     create) create_app;;
-    run) run_server "$@";;
+    run|start) run_server "$@";;
+    stop) stop_server;;
+    run-dev|run-debug) run_server_debug "$@";;
 esac
