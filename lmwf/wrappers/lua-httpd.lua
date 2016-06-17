@@ -36,7 +36,7 @@ mt = {
 
         local size = f:seek('end')
         f:seek('set')
-        local max_size = 2^20 -- 1Mo
+        local max_size = 2^20 -- 1M
 
         headers = headers or {}
         headers['Content-length'] = size
@@ -51,8 +51,8 @@ mt = {
         end
 
         local readsize, sent = 0, 0
-        --local bufsize = 2^14
-        local bufsize = 1024*1024
+        --local bufsize = 2^14 -- 16K
+        local bufsize = 2^20 -- 1M
         while true do
             local d = f:read(bufsize)
             if not d then break end
