@@ -1,5 +1,5 @@
 describe("HTTPd server unit tests", function()
-    local hostname, port = 'localhost', 1444
+    local hostname, port = 'localhost', 1443
     local host = 'http://' .. hostname .. ':' .. port
     local httpd = require'spec.loader_ctl_tests'
     local server, pid = nil, nil
