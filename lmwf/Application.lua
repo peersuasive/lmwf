@@ -20,7 +20,17 @@ local function url_for(self, name, params, method)
     end
 
     local url, matches = unpack(v)
-    if not matches then return url
+    if not matches then
+        local t = type(params)
+        if params==nil then
+            return url
+        elseif 'string'==t then
+            url = url..'/'..params:gsub('^/*','')
+        elseif 'table'==t then
+            url = url..'/'..( table.concat(params,'/'):gsub('^/*','') )
+        end
+        url = url:gsub('/*$','')
+        return url
     else
         local wc = {}
         for k,v in pairs(params or {}) do
@@ -126,7 +136,7 @@ local function add_route(self, method, route, cb)
                 path, self.name, def.name) end
         end)
 
-        pathes.pathes[path] = {cb, name=self.name}
+        pathes.pathes[path] = {cb, name, name=self.name}
         --if name then pathes.names[name] = path end
         if name then
 

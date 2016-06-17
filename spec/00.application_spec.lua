@@ -250,6 +250,19 @@ describe("HTMLd unit tests", function()
         assert.same( '/url/with/EXTRA/PARAMS', app:url_for('wildcard', {'EXTRA','PARAMS'}) )
     end)
     
+    it("should concatenate path to url_for", function()
+        local app = require'lmwf.Application'("url_for_concat_path")
+        app:GET({concat='/url'}, 'URLCONCAT')
+        assert.same( '/url/me', app:url_for('concat', {'me'}) )
+    end)
+
+    it("should fail to concatenate path to unknown route with url_for", function()
+        local app = require'lmwf.Application'("url_for_concat_path")
+        app:GET({concat='/url'}, 'URLCONCAT')
+        assert.same( nil, app:url_for('unknown', {'me'}) )
+    end)
+
+
     it("should provide env and req objects", function()
         local app = require'lmwf.Application'("env_and_req")
         local f = function(env, req)
