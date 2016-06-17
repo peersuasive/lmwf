@@ -79,9 +79,9 @@ end
 
 -- 
 local render
-render = function(self, env, name, raw)
+render = function(self, env, name, this, no_error)
     local vp = self.config.views
-    --local vp = raw and '.' or self.config.views
+    --local vp = no_error and '.' or self.config.views
     local pname = vp..'/'..( name:gsub('%.','/') )
 
     dbg( self.page_loaders )
@@ -105,22 +105,23 @@ render = function(self, env, name, raw)
                 local f = io.open(fname, 'r')
                 local data = f:read('*a'):gsub('\r?\n$','')
                 f:close()
-                env.render = function(view) return render(self, env, view, true) end
+                env.render = function(view) return render(self, env, view, this, 'no_error') end
                 env.url_for = function(name, params) return url_for(self.app, name, params) end
+                env.this = this
 
                 local r, v, err = pcall(cb, data, env)
-                if not(raw) and not(r) then
+                if not(no_error) and not(r) then
                     local err = format("Error while loading handler for '%s' format:\n  %s", ext, v or "UNKNOWN ERROR")
                     return_error(self.socket, env.client, err, cb) end
 
-                if not(raw) and not(v) then
+                if not(no_error) and not(v) then
                     local err = err or format("Handler for type '%s' returned no data and no error message", ext)
                     return nil, format("Couldn't load view %s: %s", name, err) end
                 return v
             end
         end
     end
-    if raw then return ''
+    if no_error then return ''
     else return nil, format("No loader found or no file found for view: %s", name) end
     --error(format("No loader found or no file found for view: %s", name), 2)
 end
@@ -305,9 +306,8 @@ function mt:dispatch(client, method, path)
     local app = self.app
 
     local pathes = app.pathes[method]
-    local m = unpack(pathes.pathes[path]or{})
+    local m, view_name = unpack(pathes.pathes[path]or{})
 
-    local view_name
     if not m then
         local rx = pathes.rx
         for k,v in pairs(rx) do
@@ -339,6 +339,8 @@ function mt:dispatch(client, method, path)
         end
     end
 
+    local this = view_name
+
     --dbg("Found matcher (%s)", m)
 
     set_params(params)
@@ -358,7 +360,8 @@ function mt:dispatch(client, method, path)
         local priv = {
             client = client,
             headers = self.headers,
-            data = self.data
+            data = self.data,
+            this = this,
         }
         local req = setmetatable({
             url = path,
@@ -397,7 +400,7 @@ function mt:dispatch(client, method, path)
                     -- WARNING: trying to guess view from path is most certainly error-prone
                     --view_name = view_name or app.pathes.get.names[path] or path:gsub('^/',''):gsub('/','_')
                     view_name = view_name 
-                        or app.pathes[method].names[path]
+                        --or app.pathes[method].names[path] -- shouldn't be necessary anymore as name now goes in path's table
                         or path:gsub('^/',''):gsub('/','_')
 
                     if not view_name then
@@ -408,7 +411,7 @@ function mt:dispatch(client, method, path)
                     view_name = res.render
                 end
                 if view_name then
-                    view, err = render(self, env, view_name) end
+                    view, err = render(self, env, view_name, this) end
             end
         else
             err = format("Unsupported returned type: %s", type(res))
