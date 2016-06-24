@@ -54,6 +54,13 @@ EOF
 }
 
 run_server() {
+    if [[ -f logs/pid ]]; then
+        pid=$(cat logs/pid)
+        if kill -0 $pid >/dev/null 2>&1; then
+            echo "Server is already running"
+            exit 1
+        fi
+    fi
     lemwaf_ctl --quiet "$@" &
     local pid=$!
     #disown $pid
