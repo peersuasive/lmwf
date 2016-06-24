@@ -119,7 +119,7 @@ if not __DEBUG then
     if not quiet then
         print(format("Starting server on %s:%s", config.host or'*', config.port))
     end
-    local httpd = require'lmwf.httpd'(_, socket, listener, config.app)
+    local httpd = require'lmwf.httpd'(nil, socket, listener, config.app)
     while true do
         httpd:serve()
     end
@@ -128,7 +128,7 @@ else
     local listener = assert( socket.bind( port, host) )
     dbg("Starting server on port %s:%s", host or'*', port)
     while true do
-        local httpd = require'lmwf.httpd'(_, socket, listener, config.app)
+        local httpd = require'lmwf.httpd'(nil, socket, listener, config.app)
         local r, res, err = pcall( httpd.serve, httpd )
         if not r then
             print(format("ERROR (loader): %s", res))
