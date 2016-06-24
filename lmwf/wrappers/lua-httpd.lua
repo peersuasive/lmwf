@@ -5,7 +5,7 @@ mt = {
     set_headers = function(client, headers, status, status_msg)
         local content_type, status, status_msg = 'text/html', status or 200, status_msg or "OK"
         local h = {}
-        if headers and next(headers) then
+        if 'table'==type(headers) and next(headers) then
             for header, v in pairs(headers) do
                 if header:match('[Cc][Oo][Nn][Tt][Ee][Nn][Tt]%-[Tt][Yy][Pp][Ee]') then content_type = v
                 else
