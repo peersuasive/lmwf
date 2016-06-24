@@ -112,6 +112,8 @@ end
 local socket = require( config.socket or default_socket )
 require'lmwf.debug_utils'
 
+_ = nil
+
 if not __DEBUG then
     local listener = assert( socket.bind( config.port, config.host ) )
     if not quiet then
