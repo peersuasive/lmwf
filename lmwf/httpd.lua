@@ -454,6 +454,7 @@ local default_config = {
 
 local function new(config_, socket, listener, app)
     local config_ = config_ or {}
+    assert('table'==type(config_), format("Wrong config format: expected 'table', got '%s' (%s)", type(config_), config_))
     local app = app or 'app'
     local loaded_app
     if 'table'==type(app) then loaded_app = app
