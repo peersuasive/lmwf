@@ -68,7 +68,7 @@ run_server() {
 }
 stop_server() {
     local pid=$(cat logs/pid 2>/dev/null)
-    [[ -n "$pid" ]] && kill -5 $pid && rm -f logs/pid
+    [[ -n "$pid" ]] && kill -5 $pid; rm -f logs/pid
 }
 run_server_debug() {
     lemwaf_ctl --debug "$@"
