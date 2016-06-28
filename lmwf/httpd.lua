@@ -165,24 +165,25 @@ function mt:serve()
     end
     --]==]
 
+    -- parse headers
+    local split = require'lmwf.helpers.split'
+    local prepared = split(request, '\r\n\r\n')
+    local pre_headers = prepared[1]
+    local bdata = {}
+    for i=2,#prepared do
+        bdata[#bdata+1] = prepared[i]
+    end
+    bdata = concat(bdata, '\r\n\r\n')
+    pre_headers = split(pre_headers, '\r\n')
+
+    local headers = { pre_headers[1] }
+    for i=2, #pre_headers do
+        local k, v = unpack(split(pre_headers[i], ': '))
+        headers[k:lower()] = v:match('^[0-9]+$') and tonumber(v) or v
+    end
+
     -- *naive* POST request implementation
     if ( method == "POST" ) then
-        local split = require'lmwf.helpers.split'
-        local prepared = split(request, '\r\n\r\n')
-        local pre_headers = prepared[1]
-        local bdata = {}
-        for i=2,#prepared do
-            bdata[#bdata+1] = prepared[i]
-        end
-        bdata = concat(bdata, '\r\n\r\n')
-        pre_headers = split(pre_headers, '\r\n')
-
-        local headers = { pre_headers[1] }
-        for i=2, #pre_headers do
-            local k, v = unpack(split(pre_headers[i], ': '))
-            headers[k:lower()] = v:match('^[0-9]+$') and tonumber(v) or v
-        end
-
         local ctype = headers['content-type']:gsub(';.*$','')
         local remaining = headers['content-length'] - (bdata and #bdata or 0)
         local data = {}
@@ -246,9 +247,9 @@ function mt:serve()
         else
             data = bdata
         end
-        rawset( self, 'headers', headers )
         rawset( self, 'data', data )
     end
+    rawset( self, 'headers', headers )
 
     -- Decode the requested path.
     path = url_decode( path )
