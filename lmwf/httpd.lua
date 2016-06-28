@@ -277,8 +277,17 @@ local req_ = {
 }
 
 local function set_params(t)
-    local t = t
+    local nt = {} -- copy params table
+    for k,v in next,t do
+        nt[k] = v
+    end
+    local t = nt
     if not 'table'==type(t) then return t end
+    for i=#t,1,-1 do -- flags
+        local v = t[i]
+        t[v] = true
+        table.remove(t,i)
+    end
     for k,v in pairs(t) do
         if 'string'==type(v) then
             if v:match('^%s*$')then t[k]=true
