@@ -238,7 +238,7 @@ function mt:serve()
                 local k, v = unpack(split(d, '='))
                 if v then
                     has_fields = has_fields or true
-                    data[k] = v
+                    data[k] = url_decode(v)
                 else
                     data[#data+1] = k
                 end
