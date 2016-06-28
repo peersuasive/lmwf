@@ -91,6 +91,10 @@ render = function(self, env, name, this, no_error)
         local f = io.open(fname, 'r')
         if f then
             f:close()
+
+            env.url_for = function(...) return url_for(self.app, ...) end
+
+
             if 'table'==type(cb)then -- code: lua or moonscript
                 local cb = cb[1]
                 local r, res, err = pcall(cb, self, name, env)
@@ -106,7 +110,7 @@ render = function(self, env, name, this, no_error)
                 local data = f:read('*a'):gsub('\r?\n$','')
                 f:close()
                 env.render = function(view) return render(self, env, view, this, 'no_error') end
-                env.url_for = function(name, params) return url_for(self.app, name, params) end
+                --env.url_for = function(...) return url_for(self.app, ...) end
                 env.this = this
 
                 local r, v, err = pcall(cb, data, env)
@@ -508,6 +512,8 @@ local function new(config_, socket, listener, app)
         socket = socket,
         listener = listener,
         app = loaded_app,
+
+        url_for = function(_,...) return url_for(loaded_app, ...) end,
 
         req_ = req_
     }
