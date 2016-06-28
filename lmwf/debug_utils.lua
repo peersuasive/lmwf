@@ -38,6 +38,8 @@ local function set()
             print(format("[%s:%d]:", info.short_src, info.currentline))
             if('table'==type(msg))then
                 p(msg)
+            elseif 'table'==type(...) then
+                p{ [msg] = ... }
             else
                 print(format(msg,...))
             end
