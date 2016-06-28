@@ -288,10 +288,9 @@ local function set_params(t)
     end
     local t = nt
     if not 'table'==type(t) then return t end
-    for i=#t,1,-1 do -- flags
+    for i=#t,1,-1 do -- flags (for splat)
         local v = t[i]
         t[v] = true
-        table.remove(t,i)
     end
     for k,v in pairs(t) do
         if 'string'==type(v) then
