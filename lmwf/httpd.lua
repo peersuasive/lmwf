@@ -304,7 +304,7 @@ local function set_params(t)
     return t
 end
 function mt:dispatch(client, method, path)
-    dbg("original path:", path)
+    dbg("original path: %s", path)
     local params = {}
     for a in path:gsub('^[^?]+%??',''):gmatch('[^&]+') do
         local k,v = a:match('^([^=]+)=?(.*)$')
