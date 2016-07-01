@@ -35,8 +35,9 @@ local HTTP_STATUS = {
 }
 
 local function return_error(socket, client, err, cb, code)
-    if socket and socket.send_error then
-        socket.send_error(client, code or 500)
+    if socket and socket.close then
+        if socket.send_error then
+            socket.send_error(client, code or 500) end
         socket.close(client)
     end
     if __TEST then
@@ -93,7 +94,6 @@ render = function(self, env, name, this, no_error)
             f:close()
 
             env.url_for = function(...) return url_for(self.app, ...) end
-
 
             if 'table'==type(cb)then -- code: lua or moonscript
                 local cb = cb[1]
@@ -181,7 +181,7 @@ function mt:serve()
         local k, v = unpack(split(pre_headers[i], ': '))
         headers[k:lower()] = v:match('^[0-9]+$') and tonumber(v) or v
     end
-
+    
     -- *naive* POST request implementation
     if ( method == "POST" ) then
         local ctype = headers['content-type']:gsub(';.*$','')
