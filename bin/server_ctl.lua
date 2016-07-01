@@ -112,21 +112,23 @@ end
 local socket = require( config.socket or default_socket )
 require'lmwf.debug_utils'
 
-_ = nil
+_ = nil -- ??? who in hell is setting this ???
 
 if not __DEBUG then
-    local listener = assert( socket.bind( config.port, config.host ) )
+    local host, port = config.host or '*', config.port
+    local listener = assert( socket.bind( port, host ) )
     if not quiet then
-        print(format("Starting server on %s:%s", config.host or'*', config.port))
+        print(format("Starting server on %s:%s", host, port))
     end
     local httpd = require'lmwf.httpd'(nil, socket, listener, config.app)
     while true do
         httpd:serve()
     end
+    socket.close(listener)
 else
-    local host, port = config.dev.host or config.host, config.dev.port or config.port
+    local host, port = config.dev.host or config.host or '*', config.dev.port or config.port
     local listener = assert( socket.bind( port, host) )
-    dbg("Starting server on port %s:%s", host or'*', port)
+    dbg("Starting server on port %s:%s", host, port)
     while true do
         local httpd = require'lmwf.httpd'(nil, socket, listener, config.app)
         local r, res, err = pcall( httpd.serve, httpd )
@@ -137,4 +139,5 @@ else
         end
         __unload()
     end
+    socket.close(listener)
 end
