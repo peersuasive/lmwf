@@ -7,7 +7,9 @@ mt = {
         local h = {}
         if 'table'==type(headers) and next(headers) then
             for header, v in pairs(headers) do
-                if header:match('[Cc][Oo][Nn][Tt][Ee][Nn][Tt]%-[Tt][Yy][Pp][Ee]') then content_type = v
+                --if header:match('[Cc][Oo][Nn][Tt][Ee][Nn][Tt]%-[Tt][Yy][Pp][Ee]') then content_type = v
+                local hdr=header:lower()
+                if hdr=='content-type' then content_type = v
                 else
                     h[#h+1] = header..': '..v end
             end
