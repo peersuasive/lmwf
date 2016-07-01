@@ -112,6 +112,7 @@ render = function(self, env, name, this, no_error)
                 env.render = function(view) return render(self, env, view, this, 'no_error') end
                 --env.url_for = function(...) return url_for(self.app, ...) end
                 env.this = this
+                env.self = env
 
                 local r, v, err = pcall(cb, data, env)
                 if not(no_error) and not(r) then
@@ -249,10 +250,13 @@ function mt:serve()
         end
         rawset( self, 'data', data )
     end
-    rawset( self, 'headers', headers )
 
     -- Decode the requested path.
     path = url_decode( path )
+
+    rawset( self, 'headers', headers )
+    rawset( self, 'method', method )
+    rawset( self, 'path', path )
 
     if __DEBUG then
         local r, res, err = pcall( self.dispatch, self, client, method, path )
@@ -372,12 +376,14 @@ function mt:dispatch(client, method, path)
 
         local priv = {
             client = client,
-            headers = self.headers,
             data = self.data,
             this = this,
         }
         local req = setmetatable({
             url = path,
+            --url = self.path,
+            headers = self.headers,
+            method = self.method,
             params = params,
         }, {__index = function(s,k)
             local v = req_[k]
